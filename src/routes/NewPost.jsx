@@ -1,42 +1,19 @@
 import classes from "./NewPost.module.css";
 import Modal from "../components/Modal";
-import { Link } from "react-router-dom";
+import { Link, Form, redirect } from "react-router-dom";
 
-import { useState } from "react";
-
-function NewPost({ onAddPost }) {
-  const [enteredBody, setEnteredBody] = useState("");
-  const [enteredAuthor, setEnteredAuthor] = useState("");
-
-  function bodyChangeHandler(event) {
-    setEnteredBody(event.target.value);
-  }
-
-  function authorChangeHandler(event) {
-    setEnteredAuthor(event.target.value);
-  }
-
-  function submitHandler(event) {
-    event.preventDefault();
-    const postData = {
-      body: enteredBody,
-      author: enteredAuthor,
-    };
-
-    onAddPost(postData);
-    onCancel();
-  }
-
+function NewPost() {
+  
   return (
     <Modal>
-      <form className={classes.form} onSubmit={submitHandler}>
+      <Form method='post' className={classes.form}>
         <p>
           <label htmlFor="body">Text</label>
           <textarea
             id="body"
+            name="body"
             required
             rows={3}
-            onChange={bodyChangeHandler}
           ></textarea>
         </p>
         <p>
@@ -44,8 +21,8 @@ function NewPost({ onAddPost }) {
           <input
             type="text"
             id="name"
+            name="author"
             required
-            onChange={authorChangeHandler}
           />
         </p>
         <p className={classes.actions}>
@@ -54,9 +31,25 @@ function NewPost({ onAddPost }) {
           </Link>
           <button type="submit">Submit</button>
         </p>
-      </form>
+      </Form>
     </Modal>
   );
 }
 
 export default NewPost;
+
+export async function action ({request}){
+  const formData = await request.formData();
+  const postData = Object.fromEntries(formData);
+
+
+  await fetch('http://localhost:8080/posts',{
+      method: 'POST',
+      body: JSON.stringify(postData),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    return redirect('/');
+}
