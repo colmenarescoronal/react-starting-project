@@ -1,6 +1,7 @@
 import classes from "./NewPost.module.css";
 import Modal from "../components/Modal";
 import { Link, Form, redirect } from "react-router-dom";
+import posts from "../database";
 
 function NewPost() {
   
@@ -42,14 +43,14 @@ export async function action ({request}){
   const formData = await request.formData();
   const postData = Object.fromEntries(formData);
 
-
-  await fetch('http://localhost:8080/posts',{
-      method: 'POST',
-      body: JSON.stringify(postData),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-
+  //--------Commented to bypass back-end--------
+  // await fetch('http://localhost:8080/posts',{
+  //     method: 'POST',
+  //     body: JSON.stringify(postData),
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     }
+  //   })
+    posts.push({...postData, id: Math.random().toString()});
     return redirect('/');
 }
